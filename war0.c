@@ -113,34 +113,36 @@ void inicializarTerritorios(struct Territorio* territorio) {
 // exibirMenuPrincipal():
 // Imprime na tela o menu de ações disponíveis para o jogador.
 void exibirMenuPrincipal(struct Territorio* mapa) {
-  int opcao = 0;
+  int opcao = -1;
   int idMissao = 0;
+  while (opcao != 0) {
+    printf("\n--- MENU PRINCIPAL ---\n");
+    printf("1 - Iniciar cadastro de territorios\n");
+    printf("2 - Exibir mapa atual\n");
+    printf("3 - Iniciar fase de ataque\n");
+    printf("4 - Sortear missão\n");
+    printf("Escolha uma opção: ");
+    scanf("%d", &opcao);
+    getchar(); // limpa buffer
 
-  printf("\n--- MENU PRINCIPAL ---\n");
-  printf("1 - Iniciar cadastro de territorios\n");
-  printf("2 - Exibir mapa atual\n");
-  printf("3 - Iniciar fase de ataque\n");
-  printf("4 - Sortear missão\n");
-  printf("Escolha uma opção: ");
-  scanf("%d", &opcao);
-
-  switch (opcao) {
-    case 1:
-      inicializarTerritorios(mapa);
-      break;
-    case 2:
-      exibirMapa(mapa);
-      break;
-    case 3:
-      faseDeAtaque(mapa);
-      break;
-    case 4:
-      idMissao = sortearMissao();
-      exibirMissao(idMissao);
-      break;
-    default:
-      printf("Opcao invalida!\n");
-      break;
+    switch (opcao) {
+      case 1:
+        inicializarTerritorios(mapa);
+        break;
+      case 2:
+        exibirMapa(mapa);
+        break;
+      case 3:
+        faseDeAtaque(mapa);
+        break;
+      case 4:
+        idMissao = sortearMissao();
+        exibirMissao(idMissao);
+        break;
+      default:
+        printf("Opcao invalida!\n");
+        break;
+    }
   }
 }
 
