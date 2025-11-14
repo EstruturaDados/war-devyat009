@@ -38,8 +38,12 @@ struct Territorio {
 
 void inicializarTerritorios(struct Territorio* territorio);
 // Funções de interface com o usuário:
-void exibirMenuPrincipal();
+void exibirMenuPrincipal(struct Territorio* mapa);
 // Funções de lógica principal do jogo:
+void exibirMissao(int idMissao);
+void exibirMapa(struct Territorio const* mapa);
+void faseDeAtaque(struct Territorio* mapa);
+int sortearMissao(void);
 
 // Função utilitária:
 
@@ -58,7 +62,7 @@ int main() {
         return 1;
     }
     // - Preenche os territórios com seus dados iniciais (tropas, donos, etc.).
-    exibirMenuPrincipal();
+    exibirMenuPrincipal(mapa);
     // - Define a cor do jogador e sorteia sua missão secreta.
 
     // 2. Laço Principal do Jogo (Game Loop):
@@ -108,14 +112,18 @@ void inicializarTerritorios(struct Territorio* territorio) {
 
 // exibirMenuPrincipal():
 // Imprime na tela o menu de ações disponíveis para o jogador.
-void exibirMenuPrincipal() {
+void exibirMenuPrincipal(struct Territorio* mapa) {
+  int opcao = 0;
+  int idMissao = 0;
+
   printf("\n--- MENU PRINCIPAL ---\n");
   printf("1 - Iniciar cadastro de territorios\n");
   printf("2 - Exibir mapa atual\n");
   printf("3 - Iniciar fase de ataque\n");
   printf("4 - Sortear missão\n");
+  printf("Escolha uma opção: ");
+  scanf("%d", &opcao);
 
-  scanf("Escolha uma opcao: %d", &opcao);
   switch (opcao) {
     case 1:
       inicializarTerritorios(mapa);
@@ -127,7 +135,7 @@ void exibirMenuPrincipal() {
       faseDeAtaque(mapa);
       break;
     case 4:
-      int idMissao = sortearMissao();
+      idMissao = sortearMissao();
       exibirMissao(idMissao);
       break;
     default:
@@ -139,13 +147,13 @@ void exibirMenuPrincipal() {
 // exibirMapa():
 // Mostra o estado atual de todos os territórios no mapa, formatado como uma tabela.
 // Usa 'const' para garantir que a função apenas leia os dados do mapa, sem modificá-los.
-void exibirMapa(const struct Territorio* territorio) {
+void exibirMapa(struct Territorio const* mapa) {
     printf("\n=== MAPA ATUAL DOS TERRITORIOS ===\n");
     printf("%-5s | %-15s | %-15s | %-10s\n", "ID", "NOME", "COR EXERCITO", "TROPAS");
     printf("-----------------------------------------------------\n");
     for (int i = 0; i < 5; i++) {
         printf("%-5d | %-15s | %-15s | %-10d\n",
-          i, territorio[i].nome, territorio[i].corExercito, territorio[i].numTropas);
+          i, mapa[i].nome, mapa[i].corExercito, mapa[i].numTropas);
     }
 }
 
@@ -172,7 +180,10 @@ void exibirMissao(int idMissao) {
 // faseDeAtaque():
 // Gerencia a interface para a ação de ataque, solicitando ao jogador os territórios de origem e destino.
 // Chama a função simularAtaque() para executar a lógica da batalha.
-faseDeAtaque();
+void faseDeAtaque(struct Territorio* mapa) {
+  // TODO: Implementar lógica de ataque
+  printf("Fase de ataque não implementada ainda.\n");
+}
 // simularAtaque():
 // Executa a lógica de uma batalha entre dois territórios.
 // Realiza validações, rola os dados, compara os resultados e atualiza o número de tropas.
@@ -180,7 +191,7 @@ faseDeAtaque();
 
 // sortearMissao():
 // Sorteia e retorna um ID de missão aleatório para o jogador.
-int sortearMissao() {
+int sortearMissao(void) {
     /* retorna um valor aleatorio entre 1 e 3 */
     return (rand() % 3) + 1;
 }
