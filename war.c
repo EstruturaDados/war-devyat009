@@ -15,18 +15,36 @@
 // ============================================================================
 
 // Inclusão das bibliotecas padrão necessárias para entrada/saída, alocação de memória, manipulação de strings e tempo.
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <locale.h>
 // --- Constantes Globais ---
 // Definem valores fixos para o número de territórios, missões e tamanho máximo de strings, facilitando a manutenção.
 
 // --- Estrutura de Dados ---
 // Define a estrutura para um território, contendo seu nome, a cor do exército que o domina e o número de tropas.
+struct Territorio {
+    char nome[30];
+    char corExercito[20];
+    int numTropas;
+};
+
 
 // --- Protótipos das Funções ---
 // Declarações antecipadas de todas as funções que serão usadas no programa, organizadas por categoria.
 // Funções de setup e gerenciamento de memória:
+
+void inicializarTerritorios(struct Territorio* territorio);
 // Funções de interface com o usuário:
+void exibirMenuPrincipal(struct Territorio* mapa);
 // Funções de lógica principal do jogo:
+void exibirMissao(int idMissao);
+void exibirMapa(struct Territorio const* mapa);
+void faseDeAtaque(struct Territorio* mapa);
+int sortearMissao(void);
+
 // Função utilitária:
 
 // --- Função Principal (main) ---
@@ -34,9 +52,17 @@
 int main() {
     // 1. Configuração Inicial (Setup):
     // - Define o locale para português.
+    setlocale(LC_ALL, "Portuguese");
     // - Inicializa a semente para geração de números aleatórios com base no tempo atual.
+    srand((unsigned int)time(NULL));
     // - Aloca a memória para o mapa do mundo e verifica se a alocação foi bem-sucedida.
+    struct Territorio* mapa = (struct Territorio*)calloc(5, sizeof(struct Territorio));
+    if (mapa == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para o mapa.\n");
+        return 1;
+    }
     // - Preenche os territórios com seus dados iniciais (tropas, donos, etc.).
+    exibirMenuPrincipal(mapa);
     // - Define a cor do jogador e sorteia sua missão secreta.
 
     // 2. Laço Principal do Jogo (Game Loop):
@@ -63,24 +89,103 @@ int main() {
 // inicializarTerritorios():
 // Preenche os dados iniciais de cada território no mapa (nome, cor do exército, número de tropas).
 // Esta função modifica o mapa passado por referência (ponteiro).
+void inicializarTerritorios(struct Territorio* territorio) {
+    printf("\nCadastro de territorios\n");
+    for (int i = 0; i < 5; i++) {
+        printf("Territorio %d\n", i + 1);
+        printf("Nome: ");
+        fgets(territorio[i].nome, sizeof(territorio[i].nome), stdin);
+        territorio[i].nome[strcspn(territorio[i].nome, "\n")] = 0; // Remove newline
+
+        printf("Cor do exercito: ");
+        fgets(territorio[i].corExercito, sizeof(territorio[i].corExercito), stdin);
+        territorio[i].corExercito[strcspn(territorio[i].corExercito, "\n")] = 0; // Remove newline
+
+        printf("Numero de tropas: ");
+        scanf("%d", &territorio[i].numTropas);
+        getchar(); // limpa buffer
+    }
+}
 
 // liberarMemoria():
 // Libera a memória previamente alocada para o mapa usando free.
 
 // exibirMenuPrincipal():
 // Imprime na tela o menu de ações disponíveis para o jogador.
+void exibirMenuPrincipal(struct Territorio* mapa) {
+  int opcao = -1;
+  int idMissao = 0;
+  while (opcao != 0) {
+    printf("\n--- MENU PRINCIPAL ---\n");
+    printf("1 - Iniciar cadastro de territorios\n");
+    printf("2 - Exibir mapa atual\n");
+    printf("3 - Iniciar fase de ataque\n");
+    printf("4 - Sortear missão\n");
+    printf("Escolha uma opção: ");
+    scanf("%d", &opcao);
+    getchar(); // limpa buffer
+
+    switch (opcao) {
+      case 1:
+        inicializarTerritorios(mapa);
+        break;
+      case 2:
+        exibirMapa(mapa);
+        break;
+      case 3:
+        faseDeAtaque(mapa);
+        break;
+      case 4:
+        idMissao = sortearMissao();
+        exibirMissao(idMissao);
+        break;
+      default:
+        printf("Opcao invalida!\n");
+        break;
+    }
+  }
+}
 
 // exibirMapa():
 // Mostra o estado atual de todos os territórios no mapa, formatado como uma tabela.
 // Usa 'const' para garantir que a função apenas leia os dados do mapa, sem modificá-los.
+void exibirMapa(struct Territorio const* mapa) {
+    printf("\n=== MAPA ATUAL DOS TERRITORIOS ===\n");
+    printf("%-5s | %-15s | %-15s | %-10s\n", "ID", "NOME", "COR EXERCITO", "TROPAS");
+    printf("-----------------------------------------------------\n");
+    for (int i = 0; i < 5; i++) {
+        printf("%-5d | %-15s | %-15s | %-10d\n",
+          i, mapa[i].nome, mapa[i].corExercito, mapa[i].numTropas);
+    }
+}
 
 // exibirMissao():
 // Exibe a descrição da missão atual do jogador com base no ID da missão sorteada.
+void exibirMissao(int idMissao) {
+    printf("\n=== MISSÃO DO JOGADOR ===\n");
+    switch (idMissao) {
+        case 1:
+            printf("Destruir o exército vermelho!\n");
+            break;
+        case 2:
+            printf("Conquistar 3 territórios inimigos!\n");
+            break;
+        case 3:
+            printf("Conquistar 5 territórios inimigos!\n");
+            break;
+        default:
+            printf("Missão desconhecida!\n");
+            break;
+    }
+}
 
 // faseDeAtaque():
 // Gerencia a interface para a ação de ataque, solicitando ao jogador os territórios de origem e destino.
 // Chama a função simularAtaque() para executar a lógica da batalha.
-
+void faseDeAtaque(struct Territorio* mapa) {
+  // TODO: Implementar lógica de ataque
+  printf("Fase de ataque não implementada ainda.\n");
+}
 // simularAtaque():
 // Executa a lógica de uma batalha entre dois territórios.
 // Realiza validações, rola os dados, compara os resultados e atualiza o número de tropas.
@@ -88,6 +193,10 @@ int main() {
 
 // sortearMissao():
 // Sorteia e retorna um ID de missão aleatório para o jogador.
+int sortearMissao(void) {
+    /* retorna um valor aleatorio entre 1 e 3 */
+    return (rand() % 3) + 1;
+}
 
 // verificarVitoria():
 // Verifica se o jogador cumpriu os requisitos de sua missão atual.
